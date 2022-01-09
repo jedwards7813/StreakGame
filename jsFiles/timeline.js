@@ -37,7 +37,7 @@ if (condition == 1) {
 
 // initiate timeline
 jsPsych.init({
-   timeline: exp.timeline,
+   timeline: timeline,
    on_finish: function() {
        firebase.database().ref(firebase.auth().currentUser.uid).set({
            data: jsPsych.data.get().values()
