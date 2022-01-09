@@ -29,7 +29,20 @@ if (condition == 1) {
     var exp = new MakeTimeline(nonStreakGame);
 };
 
+//jsPsych.init({
+//    timeline: exp.timeline,
+//    
+//});
+//
+
+// initiate timeline
 jsPsych.init({
-    timeline: exp.timeline,
-    
+   timeline: exp.timeline,
+   on_finish: function() {
+       firebase.database().ref(firebase.auth().currentUser.uid).set({
+           data: jsPsych.data.get().values()
+        });
+        document.body.innerHTML = '<p><p><p align="center">Thank you for participating in the study!<p align="center"><b>You will be automatically re-directed to Prolific in a few moments.</b></p>';
+        setTimeout(function () { location.href = "https://app.prolific.co/submissions/complete?cc=865BE374" }, 5000);
+   }
 });
