@@ -15,8 +15,8 @@ function MakeTimeline(game) {
     game.task.round1,
     game.Qs.round1,
     game.intro.r2part1,
-    game.intro.r2part2,
-    game.intro.r2part3,
+//    game.intro.r2part2,
+//    game.intro.r2part3,
     game.task.round2,
     game.Qs.round2,
     game.Qs.demographics
@@ -24,9 +24,9 @@ function MakeTimeline(game) {
 };
 
 if (condition == 1) {
-    var exp = new MakeTimeline(streakgame);
+    var exp = new MakeTimeline(streakGame);
 } else if (condition == 0 ) {
-    var exp = new MakeTimeline(nonstreakgame);
+    var exp = new MakeTimeline(nonStreakGame);
 };
 
 //jsPsych.init({
@@ -37,7 +37,7 @@ if (condition == 1) {
 
 // initiate timeline
 jsPsych.init({
-   timeline: timeline,
+   timeline: exp.timeline,
    on_finish: function() {
        firebase.database().ref(firebase.auth().currentUser.uid).set({
            data: jsPsych.data.get().values()
