@@ -323,7 +323,7 @@ var streakGame = (function() {
         this.stimulus = function(){ 
             trialNumber++;
             var img = (jsPsych.data.get().last(2).values()[0].key_press == 32) ? hitFeedback[round][hits-1] : missFeedback[round][misses-1]
-            img == "success" ? streak++ : (length = streak, streakEarnings = length*10, streak = 0);
+            img == "success" ? streak++ : (length = streak, streakEarnings = length*settings.val, streak = 0);
 
             if (trialNumber != p.task.round1.repetitions) {
                 if (streak == 0 & length > 0) {
