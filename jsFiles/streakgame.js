@@ -51,9 +51,9 @@ var streakGame = (function() {
 
     // save condition and URL data
     jsPsych.data.addProperties({
-        pM_Active: settings.pM,
-        pEM_Active: settings.pEM,
-        colorOrder_Active: settings.colorOrder,
+        pM_Streak: settings.pM,
+        pEM_Streak: settings.pEM,
+        colorOrder_Streak: settings.colorOrder,
     });
 
    /*

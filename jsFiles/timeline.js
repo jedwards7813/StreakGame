@@ -2,7 +2,7 @@
 var condition = Math.floor(Math.random()*2);
 
 jsPsych.data.addProperties({
-    activeCondition: condition,
+    streakCondition: condition,
     date: new Date(),
     PROLIFIC_PID: jsPsych.data.getURLVariable('subject'),
 });

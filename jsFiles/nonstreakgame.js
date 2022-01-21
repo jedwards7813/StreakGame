@@ -51,9 +51,9 @@ var nonStreakGame = (function() {
 
     // save condition and URL data
     jsPsych.data.addProperties({
-        pM_Active: settings.pM,
-        pEM_Active: settings.pEM,
-        colorOrder_Active: settings.colorOrder,
+        pM_NonStreak: settings.pM,
+        pEM_NonStreak: settings.pEM,
+        colorOrder_NonStreak: settings.colorOrder,
     });
 
    /*
