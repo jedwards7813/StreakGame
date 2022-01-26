@@ -311,7 +311,7 @@ var nonStreakGame = (function() {
         };      
     };
 
-    function MakeFeedback(round) {
+    function MakeFeedback(round, span, game) {
         this.type = 'html-keyboard-response';
         this.data = {Trial_Type: `feedback_${round}`};
         this.stimulus = function(){ 
@@ -327,10 +327,10 @@ var nonStreakGame = (function() {
                 }
             } else {
                 if (img == "failure") {
-                    feedbackText = `<div style='font-size:35px'><p><b>The game is now complete</b></p></div><div style='font-size:50px'><p>+0 cents</p></div>`;
+                    feedbackText = `<div style='font-size:50px'><p>+0 cents</p></div><div style='font-size:35px'><p><b>(The <span class='${span}'>${game}</span> is now complete)</b></p></div>`;
                 }
                 else if (img == "success") {
-                    feedbackText = `<div style='font-size:35px'><p><b>The game is now complete</b></p></div><div style='font-size:50px'><p>+${settings.val} cent${text.plural}</p></div>`;
+                    feedbackText = `<div style='font-size:50px'><p>+${settings.val} cent${text.plural}</p></div><div style='font-size:35px'><p><b>(The <span class='${span}'>${game}</span> is now complete)</b></p></div>`;
                 }
             }
 
@@ -413,8 +413,8 @@ var nonStreakGame = (function() {
         probeR2 = new MakeProbe('R2'),
         responseR1 = new MakeResponse('R1'),
         responseR2 = new MakeResponse('R2'),
-        feedbackR1 = new MakeFeedback('R1'),
-        feedbackR2 = new MakeFeedback('R2'),
+        feedbackR1 = new MakeFeedback('R1', text.span1, text.game1),
+        feedbackR2 = new MakeFeedback('R2', text.span2, text.game2),
         delayR1 = new MakeDelay('R1'),
         delayR2 = new MakeDelay('R2'),
         tooFastR1 = new MakeTooFast('R1'),
