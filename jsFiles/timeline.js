@@ -9,6 +9,7 @@ jsPsych.data.addProperties({
 
 function MakeTimeline(game) {
     this.timeline = [
+    game.intro.preMessage,
     game.intro.r1part1, 
     game.intro.r1part2, 
     game.intro.r1part3,

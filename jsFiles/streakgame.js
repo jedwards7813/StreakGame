@@ -10,7 +10,7 @@ var streakGame = (function() {
         colorOrder: Math.floor(Math.random()*2),
         pM: jsPsych.randomization.sampleWithoutReplacement([2,3,4,5,6,7,8], 2),
         pEM: [10, 10],
-        val: 5,
+        val: 1,
     };
 
     // create text variables for instructions
@@ -71,10 +71,16 @@ var streakGame = (function() {
         pages = {
             r1: {
                 part1: [`<div class='parent' style='text-align: left'>
-                <p>We are designing games that can be used by behavioral scientists to study visual attention. 
-                To make the games as engaging as possible, we are getting feedback from people like you.</p>
+                <p>Thank you.</p>
+                <p>Next, we will introduce you to the survey.</p>
+                <p>When you are ready, please continue.</p></div>`,
+
+                `<div class='parent' style='text-align: left'>
+                <p>We are designing games that scientists can use to study visual attention. 
+                Our goal is to make the games as immersive and engaging as possible.
+                To make the games as immersive and engaging as possible, we are getting feedback from people like you.</p>
                 <p>You will play two different games: the <span class='${text.span1}'>${text.game1}</span> and the 
-                <span class='${text.span2}'>${text.game2}</span>. Then you will tell us which you found more engaging.</p>
+                <span class='${text.span2}'>${text.game2}</span>. After each game, you will report how immersed and engaged you felt.</p>
                 <p>The games are very similar, but their color schemes will help you tell them apart.</p>
                 <p>Continue to learn about and play the <span class='${text.span1}'>${text.game1}</span>.</p>
                 <p>After you finish, you will learn about and play the <span class='${text.span2}'>${text.game2}</span>.</p>
@@ -101,12 +107,12 @@ var streakGame = (function() {
 
                 `<div class='parent'>
                 <p>Winning streaks are worth money. The longer the streak, the more money it's worth.</p>
-                <p>Specifically, 5 cents will be added to your bonus fund for each consecutive tile you activate.</p>               
+                <p>Specifically, 1 cent will be added to your bonus fund for each consecutive tile you activate.</p>               
                 <div class='box' style='background-color:gray'></div>
                 </div>`,
 
                 `<div class='parent'>
-                <p>Activating 1 tile in a row is worth 5 cents, activating 2 tiles in a row is worth 10 cents, and so forth.</p>
+                <p>Activating 1 tile in a row is worth 1 cent, activating 2 tiles in a row is worth 2 cents, and so forth.</p>
                 <p>When you're ready, continue to learn how to activate tiles.</p>
                 <div class='box' style='background-color:gray'></div>
                 </div>`,
@@ -132,7 +138,7 @@ var streakGame = (function() {
                 `<div class='parent'>
                 <p>If you miss a tile, your current streak will end, and you'll see how much money the streak was worth.
                 <br>This money gets added to your bonus fund.</p>
-                <div style='font-size:35px'><p>Your streak was 3</p></div><div style='font-size:50px'><p>+15 cents</p></div>
+                <div style='font-size:35px'><p>Your streak was 3</p></div><div style='font-size:50px'><p>+3 cents</p></div>
                 </div>`],
 
                 part3: [`<div class='parent'>
@@ -177,7 +183,7 @@ var streakGame = (function() {
     // constructor function for comprehension check loop
     function MakeLoop(span, game, color) {
 
-        var numCentsScale = ["0 cents", "1 cent", "2 cents", "3 cents", "4 cents", "5 cents"];
+        var numCentsScale = ["0 cents", ".2 cents", ".4 cents", ".6 cents", ".8 cents", "1 cent"];
 
         var errorMessage = {
             type: "instructions",
@@ -213,17 +219,35 @@ var streakGame = (function() {
         var conditionalNode = {
             timeline: [errorMessage],
             conditional_function: function() {
-                return compAns1 == `${text.value} cents` ? false : true;
+                return compAns1 == `${text.value} cent${text.plural}` ? false : true;
             }
         };
 
         this.timeline = [info, compChk1, conditionalNode];
         this.loop_function = function(){
-            return compAns1 == `${text.value} cents` ? false : true;
+            return compAns1 == `${text.value} cent${text.plural}` ? false : true;
         };
     };
 
     // create instruction variables
+    p.intro.preMessage = {
+        type: 'survey-multi-choice',
+        preamble: `<div style='text-align: left; width: 950px'>
+            <p>Welcome! Before you begin this survey, please note the following:</p>
+            <p>Unlike some surveys on Prolific, we NEVER deny payment based on performance
+            or answers to questions. We simply ask that you try your best, and answer 
+            each question as honestly and accurately as possible. No matter what answers you give or how
+            you perform, you will be fully compensated. That is a guarantee.</p>
+            <p>To ensure that you understand this information, please answer the following question.</p>
+            </div>`,
+        questions: [
+            {prompt: `Will you receive full payment regardless of how you perform and answer questions?`,
+            name: `preMessageChk`, 
+            options: [`Yes`, `No`]}
+        ],
+        scale_width: 500,
+    };
+
     p.intro.r1part1 = {
         type: "instructions",
         pages: pages.r1.part1,
@@ -450,9 +474,8 @@ var streakGame = (function() {
 
         <p>Thank you for completing the <span class='${span}'>${name}</span>!</strong></p>
 
-        <p>During the <span class='${span}'>${name}</span>, to what extent did you feel immersed 
-        and engaged in what you were doing? Report how immersed and engaged you felt by 
-        answering the following questions.</p></div>`;
+        <p>Now, we need your honest assessment of how immersive and engaging you found the <span class='${span}'>${name}</span>. 
+        Report how immersed and engaged you felt while playing the the <span class='${span}'>${name}</span> by answering the following questions.</p></div>`;
         this.questions = [
             {prompt: `During the <span class='${span}'>${name}</span>, to what extent did you feel absorbed in what you were doing?`,
             name: `absorbed_${round}`,
@@ -475,9 +498,10 @@ var streakGame = (function() {
         this.type = 'survey-likert';
         this.preamble = `<div style='padding-top: 50px; width: 850px; font-size:16px'>
 
-        <p>Below are a few more questions about the <span class='${span}'>${name}</span>. Instead of asking about immersion and
-        engagement, these questions ask about <strong>enjoyment</strong>. Report how much you <strong>enjoyed</strong> 
-        the <span class='${span}'>${name}</span><br>by answering the following questions.</p></div>`;
+        <p>Below are a few more questions about the <span class='${span}'>${name}</span>.<br>
+        Instead of asking about immersion and engagement, these questions ask about <strong>enjoyment</strong>.</p>
+
+        <p>Report how much you <strong>enjoyed</strong> the <span class='${span}'>${name}</span> by answering the following questions.</p></div>`;
         this.questions = [
             {prompt: `How much did you enjoy playing the <span class='${span}'>${name}</span>?`,
             name: `enjoyable_${round}`,
@@ -549,7 +573,7 @@ var streakGame = (function() {
             questions: [{prompt: "", placeholder: "Prolific ID", name: "PID", columns: 50, required: true}],
             button_label: ['CLICK HERE TO FINISH'], 
             preamble: function() {
-                var totalCents = totalJackpots*10;
+                var totalCents = totalJackpots;
                 return `<p>Thank you for participating!</p><p>In total, you won <b>${totalCents} cents</b> in bonus money!
                 <br>Within one week, you will receive your bonus money. Your $1.50 for participating will be delivered immediately.</p>
                 <p>To receive payment, enter your Prolific ID in the space below.</p>`
