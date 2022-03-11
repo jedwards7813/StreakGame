@@ -298,9 +298,9 @@ var nonStreakGame = (function() {
     };
 
     function MakeLatencyArrays() {
-        var fastR1 = Array(10-settings.pM[0]).fill(225);
+        var fastR1 = Array(10-settings.pM[0]).fill(200);
         var slowR1 = Array(settings.pM[0]).fill(750);
-        var fastR2 = Array(10-settings.pM[1]).fill(225);
+        var fastR2 = Array(10-settings.pM[1]).fill(200);
         var slowR2 = Array(settings.pM[1]).fill(750);
         this.R1 = jsPsych.randomization.shuffle(fastR1.concat(slowR1));
         this.R2 = jsPsych.randomization.shuffle(fastR2.concat(slowR2));
