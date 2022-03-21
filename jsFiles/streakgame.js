@@ -8,7 +8,7 @@ var streakGame = (function() {
     // randomly assign to conditions
     var settings = {
         colorOrder: Math.floor(Math.random()*2),
-        pM: jsPsych.randomization.sampleWithoutReplacement([2,3,4,5,6,7,8], 2),
+        pM: Array([1,5], [5,1], [5,9], [9,5])[Math.floor(Math.random()*4)],
         pEM: [10, 10],
         val: 1,
     };
@@ -312,9 +312,12 @@ var streakGame = (function() {
         this.data = {Trial_Type: 'probe'};
         this.stimulus = '<div class="box" style="background-color:gray"></div>';
         this.choices = [32];
-        this.trial_duration = function(){ return latency[round][tNum-1] };
+        this.trial_duration = function(){ 
+            return trialNumber + 1 == p.task.round1.repetitions ? 180 : latency[round][tNum-1] 
+        };
         this.on_finish = function(data){
             data.key_press == 32 ? data.TooSlow = 0 : data.TooSlow = 1;
+            console.log(trialNumber + 1 == p.task.round1.repetitions ? 180 : latency[round][tNum-1])
         };
     };
 
@@ -356,7 +359,11 @@ var streakGame = (function() {
                     feedbackText = `<div style='font-size:35px'><p>Current Streak:</p></div><div style='font-size:50px'><p>${streak}</p></div>`;
                 }
             } else {
-                feedbackText = `<div style='font-size:35px'><p>Your streak was ${length}</p></div><div style='font-size:50px'><p>+${streakEarnings} cents</p></div><div style='font-size:35px'><p><b>(The <span class='${span}'>${game}</span> is now complete)</b></p></div>`;
+                if (streak == 0 & length > 0) {
+                    feedbackText = `<div style='font-size:35px'><p>Your streak was ${length}</p></div><div style='font-size:50px'><p>+${streakEarnings} cents</p></div>`;
+                } else {
+                    feedbackText = `<div style='font-size:35px'><p>Current Streak:</p></div><div style='font-size:50px'><p>${streak}</p></div>`;
+                }
                 streak = 0;
                 length = 0;
                 streakEarnings = 0;
@@ -383,11 +390,7 @@ var streakGame = (function() {
             jsPsych.data.get().last(3).values()[0].key_press == 32 ? data.Jackpot = true : data.Jackpot = false;      
         };
         this.choices = jsPsych.NO_KEYS;
-        this.trial_duration = function() {
-            var delay;
-            trialNumber != p.task.round1.repetitions ? delay = 2000 : delay = 8000;
-            return delay;
-        };
+        this.trial_duration = 2000;
     };
 
     function MakeDelay(round) {
@@ -464,8 +467,8 @@ var streakGame = (function() {
     p.Qs = {};
 
     // scales
-    var zeroToExtremely = ['0<br>Not<br>at all', '1', '2', '3', '4', '5', '6', '7', '8<br>Extremely'];
-    var zeroToALot = ['0<br>Not<br>at all', '1', '2', '3', '4', '5', '6', '7', '8<br>A lot'];
+    var zeroToExtremely = ['0<br>A little', '1', '2', '3', '4', '5', '6', '7', '8<br>Extremely'];
+    var zeroToALot = ['0<br>A little', '1', '2', '3', '4', '5', '6', '7', '8<br>A lot'];
 
     // constructor functions
     var flowQs = function(span, name, round) {
@@ -474,8 +477,9 @@ var streakGame = (function() {
 
         <p>Thank you for completing the <span class='${span}'>${name}</span>!</strong></p>
 
-        <p>Now, we need your honest assessment of how immersive and engaging you found the <span class='${span}'>${name}</span>. 
-        Report how immersed and engaged you felt while playing the the <span class='${span}'>${name}</span> by answering the following questions.</p></div>`;
+        <p>During the <span class='${span}'>${name}</span>, to what extent did you feel immersed 
+        and engaged in what you were doing? Report how immersed and engaged you felt by 
+        answering the following questions.</p></div>`;
         this.questions = [
             {prompt: `During the <span class='${span}'>${name}</span>, to what extent did you feel absorbed in what you were doing?`,
             name: `absorbed_${round}`,
@@ -498,10 +502,9 @@ var streakGame = (function() {
         this.type = 'survey-likert';
         this.preamble = `<div style='padding-top: 50px; width: 850px; font-size:16px'>
 
-        <p>Below are a few more questions about the <span class='${span}'>${name}</span>.<br>
-        Instead of asking about immersion and engagement, these questions ask about <strong>enjoyment</strong>.</p>
-
-        <p>Report how much you <strong>enjoyed</strong> the <span class='${span}'>${name}</span> by answering the following questions.</p></div>`;
+        <p>Below are a few more questions about the <span class='${span}'>${name}</span>. Instead of asking about immersion and
+        engagement, these questions ask about <strong>enjoyment</strong>. Report how much you <strong>enjoyed</strong> 
+        the <span class='${span}'>${name}</span><br>by answering the following questions.</p></div>`;
         this.questions = [
             {prompt: `How much did you enjoy playing the <span class='${span}'>${name}</span>?`,
             name: `enjoyable_${round}`,
