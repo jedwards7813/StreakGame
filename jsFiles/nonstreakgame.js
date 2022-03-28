@@ -317,7 +317,6 @@ var nonStreakGame = (function() {
         };
         this.on_finish = function(data){
             data.key_press == 32 ? data.TooSlow = 0 : data.TooSlow = 1;
-            console.log(trialNumber + 1 == p.task.round1.repetitions ? 180 : latency[round][tNum-1])
         };
     };
 

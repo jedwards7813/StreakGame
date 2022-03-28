@@ -1,18 +1,20 @@
 // Define Stimuli
 
 
-var streakGame = (function() {
+var streakGame2 = (function() {
 
     var p = {};
 
     // randomly assign to conditions
     var settings = {
         colorOrder: Math.floor(Math.random()*2),
-        pM: Array([1,5], [5,1], [5,9], [9,5])[Math.floor(Math.random()*4)],
+        pM: Array(1, 5, 9)[Math.floor(Math.random()*3)],
         pEM: [10, 10],
+        streakOrder: Math.floor(Math.random()*2),
         val: 1,
+        nTrials: 50
     };
-
+console.log(settings.pM);
     // create text variables for instructions
     
     var text = {
@@ -84,16 +86,16 @@ var streakGame = (function() {
                 <p>The games are very similar, but their color schemes will help you tell them apart.</p>
                 <p>Continue to learn about and play the <span class='${text.span1}'>${text.game1}</span>.</p>
                 <p>After you finish, you will learn about and play the <span class='${text.span2}'>${text.game2}</span>.</p>
-                </div>`],
+                </div>`,
 
-                part2: [`<div class='parent'>
+                `<div class='parent'>
                 <p>The goal of the <span class='${text.span1}'>${text.game1}</span> is to win as much money as possible.</p>
                 <p>All of the money you win during the <span class='${text.span1}'>${text.game1}</span> will be added to
                 a "bonus fund,"<br>which you'll receive at the end of the study.</p>
                 <p>Your total payment will be $1.50 for your participation, plus all of the money in your bonus fund.</p>
-                </div>`,
+                </div>`],
 
-                `<div class='parent'>
+                part2Strk: [`<div class='parent'>
                 <p>To win money in the <span class='${text.span1}'>${text.game1}</span>, you must build "winning streaks."</p>
                 <p>A winning streak is a series of consecutive successes.</p>
                 <p>The more winning streaks you build, and the longer they last, the more money you'll win.</p>
@@ -108,12 +110,6 @@ var streakGame = (function() {
                 `<div class='parent'>
                 <p>Winning streaks are worth money. The longer the streak, the more money it's worth.</p>
                 <p>Specifically, 1 cent will be added to your bonus fund for each consecutive tile you activate.</p>               
-                <div class='box' style='background-color:gray'></div>
-                </div>`,
-
-                `<div class='parent'>
-                <p>Activating 1 tile in a row is worth 1 cent, activating 2 tiles in a row is worth 2 cents, and so forth.</p>
-                <p>When you're ready, continue to learn how to activate tiles.</p>
                 <div class='box' style='background-color:gray'></div>
                 </div>`,
 
@@ -141,6 +137,45 @@ var streakGame = (function() {
                 <div style='font-size:35px'><p>Your streak was 3</p></div><div style='font-size:50px'><p>+3 cents</p></div>
                 </div>`],
 
+                part2Bern: [`<div class='parent'>
+                <p>To win money in the <span class='${text.span1}'>${text.game1}</span>, you must achieve "successes."</p>
+                <p>The more successes you achieve, the more money you'll win.</p>
+                </div>`,
+
+                `<div class='parent'>
+                <p>To achieve successes, you'll try to "activate" tiles like this one.</p>
+                <p>Activating a tile results in a success.</p>
+                <div class='box' style='background-color:gray'></div>
+                </div>`,
+
+                `<div class='parent'>
+                <p>Successes are worth money. The more tiles you activate, the more money you'll win.</p>
+                <p>Specifically, 1 cent will be added to your bonus fund for each tile you activate.</p>               
+                <div class='box' style='background-color:gray'></div>
+                </div>`,
+
+                `<div class='parent'>
+                <p>Tiles will appear on your screen, then disappear very quickly. To activate a tile, you must press your SPACE BAR 
+                before it disappears; whenever you see a tile, you should press your SPACE BAR as fast as possible.</p>
+                <div class='box' style='background-color:gray'></div>
+                </div>`,
+
+                `<div class='parent'>
+                <p>In the <span class='${text.span1}'>${text.game1}</span>, tiles turn <span class='${text.span1}'>${text.color1}</span> 
+                when activated.</p>
+                <div class='box' style='background-color:${text.hex1}'></div>
+                </div>`,
+
+                `<div class='parent'>
+                <p>If you activate a tile, you'll see that ${text.value} cent${text.plural} was added to your bonus fund:</p>
+                <div style='font-size:50px'><p>+${settings.val} cent${text.plural}</p></div>
+                </div>`,
+
+                `<div class='parent'>
+                <p>If you miss a tile, you'll see that no money was added to your bonus fund.</p>
+                <div style='font-size:50px'><p>+0 cents</p></div>
+                </div>`],
+
                 part3: [`<div class='parent'>
                 <p>You are now ready to play the <span class='${text.span1}'>${text.game1}</span>.</p>
                 <p>Once you proceed, the <span class='${text.span1}'>${text.game1}</span> will start immediately, 
@@ -157,21 +192,71 @@ var streakGame = (function() {
                 `<div class='parent'>
                 <p>The <span class='${text.span2}'>${text.game2}</span> is identical to the 
                 <span class='${text.span1}'>${text.game1}</span> with two exceptions.</p>
-                </div>`,
+                </div>`],
 
-                `<div class='parent'>
-                <p>First, in the <span class='${text.span2}'>${text.game2}</span>, tiles turn 
-                <span class='${text.span2}'>${text.color2}</span> if activated.</p>
+                part2Strk: [`<div class='parent'>
+                <p>First, in the <span class='${text.span2}'>${text.game2}</span>, tiles turn <span class='${text.span2}'>${text.color2}</span> 
+                when activated.</p>
                 <div class='box' style='background-color:${text.hex2}'></div>
                 </div>`,
 
                 `<div class='parent'>
-                <p>Second, in the <span class='${text.span2}'>${text.game2}</span>, you'll have ${text.speedChange1} time 
-                to activate the tiles.<br>Thus, in the <span class='${text.span2}'>${text.game2}</span>, ${text.speedChange2}.</p>
+                <p>Second, in the <span class='${text.span2}'>${text.game2}</span>, you'll see how many
+                tiles you've activated in a row.</p>
+                <p>Thus, in the <span class='${text.span2}'>${text.game2}</span>, 
+                you'll be focusing on achieving strings of consecutive successes. In other words, you'll be focusing 
+                on building "winning streaks."</p>
+                <p>The more winning streaks you build, and the longer they last, the more money you'll win.</p>
+                </div>`,
+
+                `<div class='parent'>
+                <p>Winning streaks are worth money. The longer the streak, the more money it's worth.</p>
+                <p>Specifically, 1 cent will be added to your bonus fund for each consecutive tile you activate.</p>               
+                </div>`,
+
+                `<div class='parent'>
+                <p>If you activate a tile, you'll see how many tiles you've activated in a row.</p>
+                <p>For instance, if you activate 3 tiles in a row, you'll see the following information:</p>
+                <div style='font-size:35px'><p>Current Streak:</p></div><div style='font-size:50px'><p>3</p></div>
+                </div>`,
+
+                `<div class='parent'>
+                <p>If you miss a tile, your current streak will end, and you'll see how much money the streak was worth.
+                <br>This money gets added to your bonus fund.</p>
+                <div style='font-size:35px'><p>Your streak was 3</p></div><div style='font-size:50px'><p>+3 cents</p></div>
+                </div>`],
+
+                part2Bern: [`<div class='parent'>
+                <p>First, in the <span class='${text.span2}'>${text.game2}</span>, tiles turn <span class='${text.span2}'>${text.color2}</span> 
+                when activated.</p>
                 <div class='box' style='background-color:${text.hex2}'></div>
                 </div>`,
 
                 `<div class='parent'>
+                <p>Second, in the <span class='${text.span2}'>${text.game2}</span>, you won't see the number
+                of tiles you've activated in a row.</p>
+                <p>Thus, in the <span class='${text.span2}'>${text.game2}</span>,
+                you won't be focusing on building winning streaks.<br>
+                Instead, you'll be focusing on achieving individual successes.</p>
+                <p>The more individual successes you achieve, the more money you'll win.</p>
+                </div>`,
+
+                `<div class='parent'>
+                <p>Individual successes are worth money. The more tiles you successfully activate, the more money you'll win.</p>
+                <p>Specifically, 1 cent will be added to your bonus fund for each tile you activate.</p>               
+                </div>`,
+
+                `<div class='parent'>
+                <p>If you activate a tile, you'll see that ${text.value} cent${text.plural} was added to your bonus fund:</p>
+                <div style='font-size:50px'><p>+${settings.val} cent${text.plural}</p></div>
+                </div>`,
+
+                `<div class='parent'>
+                <p>If you miss a tile, you'll see that no money was added to your bonus fund.</p>
+                <div style='font-size:50px'><p>+0 cents</p></div>
+                </div>`],
+
+                part3: [`<div class='parent'>
                 <p>You are now ready to play the <span class='${text.span2}'>${text.game2}</span>.</p>
                 <p>Once you proceed, the <span class='${text.span2}'>${text.game2}</span> will start immediately, 
                 so get ready to press your SPACEBAR.</p>
@@ -180,15 +265,27 @@ var streakGame = (function() {
             }
         };
 
-    // constructor function for comprehension check loop
-    function MakeLoop(span, game, color) {
+    // constructor function for round 1 comprehension check loop
+    function MakeLoop(span, game, color, round) {
 
-        var numCentsScale = ["0 cents", ".2 cents", ".4 cents", ".6 cents", ".8 cents", "1 cent"];
+        if (round == 'R1') {
+            var attnChkAns = `${text.value} cent${text.plural}`;
+            var attnChkName = `attnChk1`;
+            var attnChkScale = ["0 cents", ".2 cents", ".4 cents", ".6 cents", ".8 cents", "1 cent"];
+            var attnChkPrompt = (settings.streakOrder == 0) ? `How much money is added to your bonus fund for each consecutive tile you activate?` : `How much money is added to your bonus fund for each tile you activate?`;
+            var instPage = (settings.streakOrder == 0) ? pages.r1.part2Strk : pages.r1.part2Bern;
+        } else {
+            var attnChkAns = (settings.streakOrder == 0) ? `Achieving individual successes` : `Building winning streaks`;
+            var attnChkName = `attnChk2`;
+            var attnChkScale = [`Building winning streaks`, `Achieving individual successes`];
+            var attnChkPrompt = `During the <span class='${span}'>${game}</span>, what will you be focusing on?`;
+            var instPage = (settings.streakOrder == 0) ? pages.r2.part2Bern : pages.r2.part2Strk;
+        };
 
         var errorMessage = {
             type: "instructions",
             pages: [`<div class='parent'>
-            <p>You provided the wrong answer.<br>To make sure you understand how to play, 
+            <p>You provided the wrong answer.<br>To make sure you understand the game, 
             please continue to re-read the instructions.</p>
             </div>`],
             show_clickable_nav: true,
@@ -196,38 +293,39 @@ var streakGame = (function() {
 
         var info = {
             type: "instructions",
-            pages: pages.r1.part2,
+            pages: instPage,
             show_clickable_nav: true,
         };
 
-        var compChk1 = {
+        var compChk = {
             type: 'survey-multi-choice',
             preamble: `<div style="font-size:16px">
-                <p>To make sure you understand the rules of the <span class='${span}'>${game}</span>,
+                <p>To make sure you understand the <span class='${span}'>${game}</span>,
                 please answer the following question.</p></div>`,
             questions: [
-                {prompt: `How much money is added to your bonus fund for each consecutive tile you activate?`,
-                name: `numCentsScale`, 
-                options: numCentsScale}
+                {prompt: attnChkPrompt,
+                name: attnChkName, 
+                options: attnChkScale}
             ],
             scale_width: 500,
             on_finish: function(data){
-                compAns1 = JSON.parse(data.responses)[`numCentsScale`]
+                compAns = JSON.parse(data.responses)[attnChkName]
             }
         };
 
         var conditionalNode = {
             timeline: [errorMessage],
             conditional_function: function() {
-                return compAns1 == `${text.value} cent${text.plural}` ? false : true;
+                return compAns == attnChkAns ? false : true;
             }
         };
 
-        this.timeline = [info, compChk1, conditionalNode];
+        this.timeline = [info, compChk, conditionalNode];
         this.loop_function = function(){
-            return compAns1 == `${text.value} cent${text.plural}` ? false : true;
+            return compAns == attnChkAns ? false : true;
         };
     };
+
 
     // create instruction variables
     p.intro.preMessage = {
@@ -264,9 +362,18 @@ var streakGame = (function() {
 
     p.intro.r1part2 = new MakeLoop(text.span1, text.game1, text.color1, 'R1');
 
+    p.intro.r2part2 = new MakeLoop(text.span2, text.game2, text.color2, 'R2');
+
     p.intro.r1part3 = {
         type: "instructions",
         pages: pages.r1.part3,
+        show_clickable_nav: true,
+        post_trial_gap: 500,
+    };
+
+    p.intro.r2part3 = {
+        type: "instructions",
+        pages: pages.r2.part3,
         show_clickable_nav: true,
         post_trial_gap: 500,
     };
@@ -299,12 +406,21 @@ var streakGame = (function() {
     };
 
     function MakeLatencyArrays() {
-        var fastR1 = Array(10-settings.pM[0]).fill(200);
-        var slowR1 = Array(settings.pM[0]).fill(750);
-        var fastR2 = Array(10-settings.pM[1]).fill(200);
-        var slowR2 = Array(settings.pM[1]).fill(750);
-        this.R1 = jsPsych.randomization.shuffle(fastR1.concat(slowR1));
-        this.R2 = jsPsych.randomization.shuffle(fastR2.concat(slowR2));
+        var arrayR1 = [];
+        var arrayR2 = [];
+        var fast = Array(10-settings.pM).fill(200);
+        var slow = Array(settings.pM).fill(750);
+        for (let i = 0; i < ((settings.nTrials/10)-1); i++) {
+            arrayR1.push(jsPsych.randomization.shuffle(fast.concat(slow)))
+            arrayR2.push(jsPsych.randomization.shuffle(fast.concat(slow)))
+        }
+        var popped = fast.pop();
+        arrayR1.push(jsPsych.randomization.shuffle(fast.concat(slow)));
+        arrayR2.push(jsPsych.randomization.shuffle(fast.concat(slow)));
+        arrayR1.push(popped);
+        arrayR2.push(popped);
+        this.R1 = arrayR1.flat();
+        this.R2 = arrayR2.flat();
     };
 
     function MakeProbe(round) {
@@ -313,10 +429,11 @@ var streakGame = (function() {
         this.stimulus = '<div class="box" style="background-color:gray"></div>';
         this.choices = [32];
         this.trial_duration = function(){ 
-            return trialNumber + 1 == p.task.round1.repetitions ? 180 : latency[round][tNum-1] 
+            return latency[round][trialNumber] 
         };
         this.on_finish = function(data){
             data.key_press == 32 ? data.TooSlow = 0 : data.TooSlow = 1;
+            console.log(trialNumber, settings.streakOrder, settings.nTrials, latency[round][trialNumber])
         };
     };
 
@@ -349,32 +466,30 @@ var streakGame = (function() {
         this.stimulus = function(){ 
             trialNumber++;
             var img = (jsPsych.data.get().last(2).values()[0].key_press == 32) ? hitFeedback[round][hits-1] : missFeedback[round][misses-1]
-            img == "success" ? streak++ : (length = streak, streakEarnings = length*settings.val, streak = 0);
-            
-            if (trialNumber != p.task.round1.repetitions) {
-                if (streak == 0 & length > 0) {
-                    feedbackText = `<div style='font-size:35px'><p>Your streak was ${length}</p></div><div style='font-size:50px'><p>+${streakEarnings} cents</p></div>`;
+
+            if (round == 'R1' && settings.streakOrder == 1 || round == 'R2' && settings.streakOrder == 0) {
+                if (img == "failure") {
+                    feedbackText = `<div style='font-size: 50px'>+0 cents</div>`
                 } else {
-                    feedbackText = `<div style='font-size:35px'><p>Current Streak:</p></div><div style='font-size:50px'><p>${streak}</p></div>`;
+                    feedbackText = `<div style='font-size: 50px'>+${settings.val} cent${text.plural}</div>`
                 }
             } else {
+                img == "success" ? streak++ : (length = streak, streakEarnings = length*settings.val, streak = 0);
                 if (streak == 0 & length > 0) {
                     feedbackText = `<div style='font-size:35px'><p>Your streak was ${length}</p></div><div style='font-size:50px'><p>+${streakEarnings} cents</p></div>`;
                 } else {
                     feedbackText = `<div style='font-size:35px'><p>Current Streak:</p></div><div style='font-size:50px'><p>${streak}</p></div>`;
                 }
-                streak = 0;
-                length = 0;
-                streakEarnings = 0;
+                if (trialNumber == settings.nTrials) {
+                    streak = 0;
+                    length = 0;
+                    streakEarnings = 0;
+                }
             }
 
-            return feedbackText;
-            };
+            return feedbackText
+        };
         this.on_finish = function(data){
-            if (tNum == 10) {
-                tNum = 0;
-                latency = new MakeLatencyArrays();
-            };
             if (misses == 10) { 
                 misses = 0;
                 missFeedback = new MakeMissFeedback();
@@ -383,7 +498,7 @@ var streakGame = (function() {
                 hits = 0;
                 hitFeedback = new MakeHitFeedback();
             };
-            if (trialNumber == p.task.round1.repetitions) {
+            if (trialNumber == settings.nTrials) {
                 trialNumber = 0;
             };
             jsPsych.data.get().last(3).values()[0].key_press == 32 ? data.Jackpot = true : data.Jackpot = false;      
@@ -449,12 +564,12 @@ var streakGame = (function() {
 
     p.task.round1 = {
         timeline: [delayR1, tooFastR1, probeR1, responseR1, feedbackR1],
-        repetitions: 50,
+        repetitions: settings.nTrials,
     };
 
     p.task.round2 = {
         timeline: [delayR2, tooFastR2, probeR2, responseR2, feedbackR2],
-        repetitions: 50,
+        repetitions: settings.nTrials,
     };
 
    /*
@@ -477,7 +592,7 @@ var streakGame = (function() {
         <p>Thank you for completing the <span class='${span}'>${name}</span>!</strong></p>
 
         <p>During the <span class='${span}'>${name}</span>, to what extent did you feel immersed 
-        and engaged in what you were doing? Report how immersed and engaged you felt by 
+        and engaged in what you were doing?<br>Report how immersed and engaged you felt by 
         answering the following questions.</p></div>`;
         this.questions = [
             {prompt: `During the <span class='${span}'>${name}</span>, to what extent did you feel absorbed in what you were doing?`,
@@ -501,9 +616,9 @@ var streakGame = (function() {
         this.type = 'survey-likert';
         this.preamble = `<div style='padding-top: 50px; width: 850px; font-size:16px'>
 
-        <p>Below are a few more questions about the <span class='${span}'>${name}</span>. Instead of asking about immersion and
-        engagement, these questions ask about <strong>enjoyment</strong>. Report how much you <strong>enjoyed</strong> 
-        the <span class='${span}'>${name}</span><br>by answering the following questions.</p></div>`;
+        <p>Below are a few more questions about the <span class='${span}'>${name}</span>.</p><p>Instead of asking about immersion and
+        engagement, these questions ask about <strong>enjoyment</strong>.<br>Report how much you <strong>enjoyed</strong> 
+        the <span class='${span}'>${name}</span> by answering the following questions.</p></div>`;
         this.questions = [
             {prompt: `How much did you enjoy playing the <span class='${span}'>${name}</span>?`,
             name: `enjoyable_${round}`,
